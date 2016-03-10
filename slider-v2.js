@@ -1,8 +1,8 @@
 $(function() {
 
     var attr = {
-        intervalPageChange : 800,
-        speedPageChange : 500,
+        intervalPageChange : 2000,
+        speedPageChange : 1000,
         direction : 'right-to-left',
         active : 0,
         zIndex : 100,
@@ -12,11 +12,22 @@ $(function() {
         slider : function() {
             return $('#my-slider');
         },
+        dotPager : function() {
+            return $('#pager');
+        },
+        dotLi : function() {
+            return el.dotPager().find('span');
+        },
         li : function() {
             return el.slider().find('li');
         },
+        imgNumber : function() {
+            return el.li().length;
+        },
+        activePager : function() {
+            return el.dotLi().eq(getActiveNo());
+        },
         activeSlider : function() {
-
             return el.li().eq(getActiveNo());
         },
         nav : {
@@ -28,6 +39,8 @@ $(function() {
             }
         }
     };
+
+    generatePager(el.imgNumber());
 
     el.slider()
         .mouseover(pauseAnimation)
@@ -72,11 +85,14 @@ $(function() {
             'display' : 'block'
             , 'z-index': getNextIndex()
             , 'left' : left
-            , 'width' : w + 1
+            , 'width' : w //+ 1
+            , 'opacity' : .1
         } );
-        $act.animate({left:0}, attr.speedPageChange, function(){
+        $act.animate({left:0, opacity : 1}, attr.speedPageChange, function(){
             //el.li().css('display', 'none');
             el.activeSlider().css('display', 'block');
+            el.dotLi().css('opacity' , '.6');
+            el.activePager().css('opacity' , '1');
         });
         function resizeHeight() {
             el.li().height(el.activeSlider().find('img').height());
@@ -114,9 +130,6 @@ $(function() {
         el.nav.left().css('top', pos_top);
         el.nav.right().css('top', pos_top);
     }
-
-
-
     // functions
     function pauseAnimation() {
         attr.mouseIn = true;
@@ -124,5 +137,34 @@ $(function() {
     function resumeAnimation() {
         attr.mouseIn = false;
     }
+    function generatePager(imageNumber){    
+    var pageNumber;
+    var pagerDiv = document.getElementById('pager');
+    for (i = 0; i < imageNumber; i++){
+        var li = document.createElement('span');
+        //pageNumber = document.createTextNode(parseInt(i + 1));
+        //li.appendChild(pageNumber);
+        pagerDiv.appendChild(li);
+        li.onclick = function(i){
+            return function(){
+                slideTo(i);
+            }
+        }(i);
+    }   
+    function slideTo(imageToGo){
+    console.log(imageToGo);
+    console.log(attr.active);
+    //el.dotLi().css('opacity' , '.6');
+    //el.activePager().css('opacity' , '1');
+    el.activeSlider().finish();
+
+    if ( attr.direction == 'right-to-left' ) {
+    attr.active = imageToGo - 1;
+    }
+    else {
+    attr.active = imageToGo + 1;
+    }
+    }
+}
 
 });
