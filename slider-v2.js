@@ -164,6 +164,7 @@ $(function() {
     else {
     attr.active = imageToGo + 1;
     }
+    animate(true);
     }
 }
 
